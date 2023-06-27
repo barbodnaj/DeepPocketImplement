@@ -5,7 +5,7 @@
 # - conda allows for installing packages without requiring certain compilers or
 #   libraries to be available in the system, since it installs precompiled binaries
 
-name: myenv
+name: DeepPacket
 
 channels:
   - pytorch
@@ -21,21 +21,22 @@ channels:
 # compatibility is usually guaranteed
 
 dependencies:
-  - pytorch=2.*
-  - torchvision=0.*
-  - lightning=2.*
-  - torchmetrics=0.*
-  - hydra-core=1.*
-  - rich=13.*
-  - pre-commit=3.*
-  - pytest=7.*
+  - python=3.9.16 #added
+  - pytorch=2.* #added
+  - torchvision=0.* #added
+  - lightning=2.* #added
+  - torchmetrics=0.* #added
+  - hydra-core=1.* #added
+  - rich=13.* #added
+  - pre-commit=3.* #added
+  - pytest=7.* #added
 
   # --------- loggers --------- #
-  # - wandb
-  # - neptune-client
-  # - mlflow
+  - wandb #added
+  - neptune-client #added
+  - mlflow #added
   # - comet-ml
-  # - aim>=3.16.2 # no lower than 3.16.2, see https://github.com/aimhubio/aim/issues/2550
+  - aim>=3.16.2 # no lower than 3.16.2, see https://github.com/aimhubio/aim/issues/2550
 
   - pip>=23
   - pip:
