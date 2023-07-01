@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: mnist.yaml
-  - override /model: mnist.yaml
+  - override /data: rse.yaml
+  - override /model: rse.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
 

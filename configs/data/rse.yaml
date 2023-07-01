@@ -1,0 +1,6 @@
+_target_: src.data.deepPocketDatamodule.DeepPocketDataModule
+data_dir: ${paths.data_dir}
+batch_size: 32
+train_val_test_split: [3310, 473, 945]
+num_workers: 2
+pin_memory: true

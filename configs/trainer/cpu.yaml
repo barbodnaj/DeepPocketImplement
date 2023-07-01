@@ -1,5 +1,5 @@
 defaults:
   - default.yaml
 
-accelerator: mps
+accelerator: cpu
 devices: 1
