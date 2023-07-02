@@ -22,3 +22,4 @@ net:
   decoder1Size: 3
   decoder2Size: 3
   outputSize: 3
+  dropoutRate: 0.3

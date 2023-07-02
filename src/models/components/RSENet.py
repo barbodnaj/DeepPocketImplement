@@ -13,25 +13,33 @@ class RSENet(nn.Module):
         decoder2Size: int = 3,
 
         outputSize: int = 3,
+         
+        dropoutRate:float = 0.3
     ):
         super().__init__()
 
         self.encoder = nn.Sequential(
             nn.Linear(inputSize, encoder1Size),
+            nn.Dropout(dropoutRate,True),
             nn.ReLU(True),
             nn.Linear(encoder1Size, encoder2Size),
+            nn.Dropout(dropoutRate,True),
             nn.ReLU(True),
             nn.Linear(encoder2Size, decoderInputSize),
+            nn.Dropout(dropoutRate,True),
             nn.ReLU(True)
         )
         
         # Decoder layers
         self.decoder = nn.Sequential(
             nn.Linear(decoderInputSize, decoder1Size),
+            nn.Dropout(dropoutRate,True),
             nn.ReLU(True),
             nn.Linear(decoder1Size,decoder2Size),
+            nn.Dropout(dropoutRate,True),
             nn.ReLU(True),
             nn.Linear(decoder2Size, outputSize),
+            nn.Dropout(dropoutRate,True),
             nn.Tanh()
         )
         

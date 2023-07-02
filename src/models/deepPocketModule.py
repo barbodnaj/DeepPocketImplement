@@ -61,12 +61,12 @@ class DeepPocketRSELitModule(LightningModule):
     def forward(self, x: torch.Tensor):
         return self.net(x) 
 
-    # def on_train_start(self):
-    #     # by default lightning executes validation step sanity checks before training starts,
-    #     # so it's worth to make sure validation metrics don't store results from these checks
-    #     self.val_loss.reset()
-    #     self.val_mae.reset()
-    #     self.val_mae_best.reset()
+    def on_train_start(self):
+        # by default lightning executes validation step sanity checks before training starts,
+        # so it's worth to make sure validation metrics don't store results from these checks
+        self.val_loss.reset()
+        self.val_mae.reset()
+        self.val_mae_best.reset()
 
     def model_step(self, batch: Any):
         x, y = batch
@@ -131,17 +131,17 @@ class DeepPocketRSELitModule(LightningModule):
             https://lightning.ai/docs/pytorch/latest/common/lightning_module.html#configure-optimizers
         """
         optimizer = self.hparams.optimizer(params=self.parameters())
-        # if self.hparams.scheduler is not None:
-        #     scheduler = self.hparams.scheduler(optimizer=optimizer)
-        #     return {
-        #         "optimizer": optimizer,
-        #         "lr_scheduler": {
-        #             "scheduler": scheduler,
-        #             "monitor": "val/loss",
-        #             "interval": "epoch",
-        #             "frequency": 1,
-        #         },
-        #     }
+        if self.hparams.scheduler is not None:
+            scheduler = self.hparams.scheduler(optimizer=optimizer)
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+                    "scheduler": scheduler,
+                    "monitor": "val/loss",
+                    "interval": "epoch",
+                    "frequency": 1,
+                },
+            }
         return {"optimizer": optimizer}
 
 
