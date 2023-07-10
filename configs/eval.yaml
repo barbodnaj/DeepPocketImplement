@@ -15,4 +15,4 @@ task_name: "eval"
 tags: ["dev"]
 
 # passing checkpoint path is necessary for evaluation
-ckpt_path: ???
+ckpt_path: /Users/barbod/Developer/finTech/DeepPocketImplement/logs/train/runs/2023-07-02_10-55-26/checkpoints/epoch_089.ckpt

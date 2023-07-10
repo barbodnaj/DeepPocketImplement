@@ -4,13 +4,17 @@ import torch
 from lightning import LightningModule
 from torchmetrics import MaxMetric,MinMetric, MeanMetric
 from torchmetrics.regression import MeanAbsoluteError
+import torch.nn.functional as F
+from torch.distributions import Categorical
+from torch import Tensor
+
 # from lightning.pytorch.loggers import TensorBoardLogger
 # from lightning.pytorch import Trainer
 
 # logger = TensorBoardLogger("tb_logs", name="DeepPocketRSE")
 # trainer = Trainer(logger=logger)
 
-class DeepPocketRSELitModule(LightningModule):
+class DeepPocketRLLitModule(LightningModule):
     """Example of LightningModule for MNIST classification.
 
     A LightningModule organizes your PyTorch code into 6 sections:
@@ -27,7 +31,26 @@ class DeepPocketRSELitModule(LightningModule):
 
     def __init__(
         self,
-        net:torch.nn.Module,
+
+        encoderNet:torch.nn.Module,
+        encoderCheckPointPath:str,
+        
+        actorNet:torch.nn.Module,
+        criticNet:torch.nn.Module,
+
+        lossGamma:float,
+        lossValueCoef:float,
+        lossEntropyCoef:float,
+
+        portfolioEnv,
+        portfolioSize:int,
+        portfolioValue:int,
+        buyCommission:float,
+        sellCommission:float,
+        maxSteps:float,
+        
+
+
         optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler,
     ):
@@ -37,13 +60,26 @@ class DeepPocketRSELitModule(LightningModule):
         # also ensures init params will be stored in ckpt
         self.save_hyperparameters(logger=False)
 
+        # loading the decoder and freezing the wights
+        self.encoderNet = encoderNet
+        self.encoderNet.loudOnlyEncoder(encoderCheckPointPath)
+        self.encoderNet.freeze()
 
-        # net 
-        self.net = net
+        self.pEnv = portfolioEnv(portfolioSize,portfolioValue,buyCommission,sellCommission,maxSteps)
 
+        self.wights = self.pEnv.state
+        # loading a2c
+        self.actorNet = actorNet
+
+        self.criticNet = criticNet
 
         # loss function
-        self.criterion = torch.nn.MSELoss()
+        self.lossGamma = lossGamma
+        self.lossValueCoef = lossValueCoef
+        self.lossEntropyCoef = lossEntropyCoef
+        self.criterionCritic = torch.nn.MSELoss()
+         
+        self.actorCritic = torch.nn.MSELoss()
 
         # metric objects for calculating and averaging accuracy across batches
         self.train_mae = MeanAbsoluteError()
@@ -58,8 +94,19 @@ class DeepPocketRSELitModule(LightningModule):
         # for tracking best so far validation accuracy
         self.val_mae_best = MinMetric()
 
-    def forward(self, x: torch.Tensor):
-        return self.net(x) 
+
+    def criticLoss(self,actionProb: Tensor, values: Tensor, actions: Tensor, rewards: Tensor, dones: Tensor, next_value: Tensor) -> Tensor:
+        
+
+        return loss
+
+    def actorLoss():
+        pass
+
+    def forward(self, x: torch.Tensor)->tuple[Tensor,Tensor]:
+        actionProb = self.actorNet(x,self.wights)
+        values = self.criticNet(x) 
+        return (actionProb,values)
 
     def on_train_start(self):
         # by default lightning executes validation step sanity checks before training starts,
@@ -68,13 +115,21 @@ class DeepPocketRSELitModule(LightningModule):
         self.val_mae.reset()
         self.val_mae_best.reset()
 
-    def model_step(self, batch: Any):
-        x, y = batch
-        
-        preds = self.forward(x)
+        self.pEnv.reset()
 
-        loss = self.criterion(preds, y)
-        return loss, preds, y
+    def model_step(self, batch: Any):
+        for x in batch :
+            lastValue = value
+            action,value = self.forward(x)
+            td_error = reward + self.lossGamma * value - lastValue
+            state , portfolioValue , reward , done , info = self.pEnv.step(action)
+            
+            actor_loss = -torch.log(action).dot(td_error.detach())
+
+
+
+        lossCritic = self.criterionCritic(preds)
+        return loss, preds
 
     def training_step(self, batch: Any, batch_idx: int):
         loss, preds, targets = self.model_step(batch)
@@ -146,4 +201,4 @@ class DeepPocketRSELitModule(LightningModule):
 
 
 if __name__ == "__main__":
-    _ = DeepPocketRSELitModule(None, None,None)
+    _ = DeepPocketRLLitModule(None, None, None, None)

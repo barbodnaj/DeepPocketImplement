@@ -1,4 +1,4 @@
-_target_: src.data.deepPocketDatamodule.DeepPocketDataModule
+_target_: src.data.deepPocketDataModule.DeepPocketDataModule
 data_dir: ${paths.data_dir}
 batch_size: 32
 train_val_test_split: [3310, 473, 945]

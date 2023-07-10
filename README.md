@@ -15,8 +15,7 @@ ______________________________________________________________________
 
 ## Description
 
-What it does
-
+Because of the lack of data in the journal this implementation is in pause
 ## Installation
 
 #### Pip
